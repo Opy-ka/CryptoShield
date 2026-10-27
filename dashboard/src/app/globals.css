@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+
+  /* Official Duration Scale (ui-craft/references/motion.md) */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-medium: 280ms;
+  --motion-slow: 400ms;
+
+  /* Official Easing Scale (animate/SKILL.md & emil-design-eng) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0B0F19;
+}
+
+body {
+  background-color: #0B0F19;
+  color: #f1f5f9;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.scroll-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+/* 1. Tactile Button Press (animate/RECIPES.md: 160ms --ease-out, scale(0.97) on :active) */
+.btn-press {
+  transition:
+    transform 160ms var(--ease-out),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease;
+  touch-action: manipulation;
+}
+
+.btn-press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Gate hover lift strictly behind fine pointer devices */
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition:
+      transform var(--motion-base) var(--ease-out),
+      border-color var(--motion-base) var(--ease-out),
+      box-shadow var(--motion-base) var(--ease-out);
+  }
+  .hover-lift:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* 2. Clip-path Duplicated Tab Indicator (animate/RECIPES.md) */
+.clip-tabs-overlay {
+  transition: clip-path 240ms var(--ease-in-out);
+  will-change: clip-path;
+}
+
+.clip-tabs-overlay[data-instant="true"] {
+  transition-duration: 0ms;
+}
+
+/* 3. GPU Compositor Bar Fill (transform: scaleX instead of layout-thrashing width) */
+.gpu-bar-fill {
+  transform-origin: left center;
+  transition: transform var(--motion-medium) var(--ease-out);
+  will-change: transform;
+}
+
+/* 4. In-place Icon Swap Slot (motion.md: scale(0.3) + blur(2px) -> scale(1) + blur(0)) */
+.swap-slot {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.swap-slot > * {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: scale(0.3);
+  filter: blur(2px);
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out),
+    filter var(--motion-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.swap-slot > *[data-visible="true"] {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+}
+
+/* 5. Blur-bridge Crossfade for Symbol / Regime transitions (animate/RECIPES.md) */
+.blur-bridge {
+  transition:
+    filter var(--motion-base) var(--ease-out),
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+}
+
+.blur-bridge[data-transitioning="true"] {
+  filter: blur(2px);
+  opacity: 0.72;
+  transform: scale(0.992);
+}
+
+/* 6. @starting-style Entry for drawers, banners, and status toasts */
+.enter-surface {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+/* 7. Hold-to-confirm / Armed clip-path overlay on Crash Button */
+.crash-btn-overlay {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--motion-base) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .crash-btn:hover:not(:disabled) .crash-btn-overlay {
+    clip-path: inset(0 0% 0 0);
+    transition: clip-path 380ms var(--ease-out);
+  }
+}
+
+.crash-btn:active:not(:disabled) .crash-btn-overlay {
+  clip-path: inset(0 0% 0 0);
+  transition: clip-path 120ms linear;
+}
+
+/* 8. Reduced Motion Contract (keeps loading spinners, zeroes spatial motion) */
+@media (prefers-reduced-motion: reduce) {
+  .clip-tabs-overlay,
+  .gpu-bar-fill,
+  .swap-slot > *,
+  .blur-bridge,
+  .enter-surface,
+  .crash-btn-overlay,
+  .hover-lift,
+  .btn-press {
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* Subtle dark scrollbar for dense operator tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
